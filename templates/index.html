@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Knot Instructions</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 40px;
+            font-family: 'Marker Felt', 'Comic Sans MS', cursive, sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 auto;
+            padding-top: 40px;
+        }
+
+        .page-wrap {
+            width: 360px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .step-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0 0 24px 0;
+            text-align: center;
+        }
+
+        .card {
+            width: 360px;
+            height: 360px;
+            background-color: #ffffff;
+            border-radius: 50%;
+            border: 5px solid #ffcc33;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .card img {
+            max-width: 110%;
+            max-height: 110%;
+            object-fit: contain;
+        }
+
+
+        .nav-buttons {
+            margin-top: 28px;
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .btn {
+            width: 80px;
+            height: 80px;
+            padding: 0;
+            border-radius: 50%;
+            border: 3px solid #ffcc33;
+            font-size: 24px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Marker Felt', 'Comic Sans MS', cursive, sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-prev {
+            background-color: #ffffff;
+            color: #ffcc33;
+        }
+
+        .btn-next {
+            background-color: #ffffff;
+            color: #ffcc33;
+        }
+        
+        .btn:hover {
+            background-color: #243c6c;
+            color: #ffffff;
+        }
+
+        .instructions-container {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 20px;
+            padding: 20px 0;
+            width: 100%;
+            max-width: 1200px;
+            scroll-behavior: smooth;
+        }
+        
+        .start-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 1200px;
+            padding: 80px 0 20px 0; /* Added top padding to maintain vertical position */
+        }
+        
+        .start-button-container {
+            width: 360px;
+            height: 360px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 28px;
+            padding-top: 40px; /* Added padding to compensate for removed title */
+        }
+        
+        .start-btn {
+            background-color: #ffffff;
+            color: #243c6c;
+            font-size: 36px;
+            font-weight: 700;
+            padding: 40px 80px;
+            border-radius: 50px;
+            border: 5px solid #ffcc33;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            font-family: 'Marker Felt', 'Comic Sans MS', cursive, sans-serif;
+        }
+        
+        .start-btn:hover {
+            background-color: #243c6c;
+            color: #ffffff;
+        }
+        
+        .instruction-step {
+            min-width: 360px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .knot-title-display {
+            font-size: 36px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 30px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            padding: 5px;
+        }
+
+        .menu-btn-line {
+            width: 30px;
+            height: 3px;
+            background-color: #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        .menu-btn:hover .menu-btn-line {
+            background-color: #ffcc33;
+        }
+
+        .popup-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-menu-content {
+            background-color: #243c6c;
+            padding: 40px;
+            border-radius: 20px;
+            border: 5px solid #ffcc33;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 400px;
+            width: 90%;
+            position: relative;
+        }
+
+        .popup-menu-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .popup-menu-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .popup-menu-option {
+            background-color: #ffffff;
+            color: #243c6c;
+            font-size: 20px;
+            font-weight: 700;
+            padding: 20px;
+            border-radius: 15px;
+            border: 3px solid #ffcc33;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            font-family: 'Marker Felt', 'Comic Sans MS', cursive, sans-serif;
+            text-align: center;
+        }
+
+        .popup-menu-option:hover {
+            background-color: #ffcc33;
+            color: #243c6c;
+        }
+
+        .close-menu-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ffffff;
+            color: #243c6c;
+            font-size: 24px;
+            font-weight: 700;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid #ffcc33;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-menu-btn:hover {
+            background-color: #ffcc33;
+            color: #243c6c;
+        }
+
+        .next-knot-step {
+            min-width: 360px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 48px;
+        }
+
+        .next-knot-card {
+            width: 360px;
+            height: 360px;
+            background-color: #ffffff;
+            border-radius: 50%;
+            border: 5px solid #ffcc33;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .next-knot-card button {
+            background-color: #243c6c;
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: 700;
+            padding: 40px 60px;
+            border-radius: 50px;
+            border: 5px solid #ffcc33;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            font-family: 'Marker Felt', 'Comic Sans MS', cursive, sans-serif;
+        }
+
+        .next-knot-card button:hover {
+            background-color: #ffcc33;
+            color: #243c6c;
+        }
+
+        .knot-menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            max-width: 600px;
+            padding: 40px 0;
+        }
+
+        .knot-menu-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        .knot-options {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .knot-option {
+            background-color: #ffffff;
+            color: #243c6c;
+            font-size: 20px;
+            font-weight: 700;
+            padding: 30px 20px;
+            border-radius: 20px;
+            border: 5px solid #ffcc33;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            font-family: 'Marker Felt', 'Comic Sans MS', cursive, sans-serif;
+            text-align: center;
+        }
+
+        .knot-option:hover {
+            background-color: #243c6c;
+            color: #ffffff;
+        }
+    </style>
+    <script>
+        let currentStep = 1;
+        let totalSteps = 3;
+        let visibleSteps = 0;
+        let started = false;
+        let selectedKnot = 'single';
+        let currentKnotIndex = 0;
+        const knotSequence = ['single', 'bowline', 'square'];
+
+        const knotConfig = {
+            'single': {
+                steps: 3,
+                folder: 'single_knot',
+                images: ['newstep1.png', 'newstep2.png', 'newstep3.png']
+            },
+            'bowline': {
+                steps: 6,
+                folder: 'bowline_knot',
+                images: ['bow1.png', 'bow2.png', 'bow3.png', 'bow4.png', 'bow5.png', 'bow6.png']
+            },
+            'square': {
+                steps: 7,
+                folder: 'sqaure_knot',
+                images: ['sqaure1.png', 'sqaure2.png', 'sqaure3.png', 'square4.png', 'sqaure5.png', 'saqure6.png', 'sqaure7.png']
+            },
+            'alpine': {
+                steps: 3,
+                folder: 'alpine_butterfly_loop',
+                images: ['alpine1.png', 'alpine2.png', 'alpine3.png']
+            }
+        };
+
+        function startInstructions() {
+            document.getElementById('start-screen').style.display = 'none';
+            started = true;
+            selectKnot('single');
+        }
+
+        function nextKnot() {
+            currentKnotIndex++;
+            if (currentKnotIndex < knotSequence.length) {
+                selectKnot(knotSequence[currentKnotIndex]);
+            }
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById('popup-menu');
+            if (menu.style.display === 'flex') {
+                menu.style.display = 'none';
+            } else {
+                menu.style.display = 'flex';
+            }
+        }
+
+        function selectKnotFromMenu(knotType) {
+            // Find the index of the selected knot in the sequence
+            const index = knotSequence.indexOf(knotType);
+            if (index !== -1) {
+                currentKnotIndex = index;
+            }
+            selectKnot(knotType);
+            toggleMenu();
+        }
+
+        function selectKnot(knotType) {
+            selectedKnot = knotType;
+            const config = knotConfig[knotType];
+            totalSteps = config.steps;
+            
+            // Update knot title
+            const knotTitles = {
+                'single': 'Single Knot',
+                'bowline': 'Bowline Knot',
+                'square': 'Square Knot',
+                'alpine': 'Alpine Butterfly Loop'
+            };
+            document.getElementById('knot-title').textContent = knotTitles[knotType];
+            
+            // Update images and create/show steps
+            const container = document.getElementById('instructions-container');
+            container.innerHTML = '';
+            
+            for (let i = 1; i <= totalSteps; i++) {
+                const stepDiv = document.createElement('div');
+                stepDiv.className = 'instruction-step';
+                stepDiv.id = `step${i}`;
+                stepDiv.style.display = 'none';
+                stepDiv.innerHTML = `
+                    <div class="step-title">Step ${i}</div>
+                    <div class="card">
+                        <img src="/static/step_img/${config.folder}/${config.images[i-1]}" alt="${knotType} step ${i}">
+                    </div>
+                `;
+                container.appendChild(stepDiv);
+            }
+            
+            // Add Next Knot button for Single Knot and Bowline Knot if not the last knot
+            if ((knotType === 'single' || knotType === 'bowline') && currentKnotIndex < knotSequence.length - 1) {
+                const nextKnotDiv = document.createElement('div');
+                nextKnotDiv.className = 'next-knot-step';
+                nextKnotDiv.id = 'next-knot-step';
+                nextKnotDiv.style.display = 'none';
+                nextKnotDiv.innerHTML = `
+                    <div class="next-knot-card">
+                        <button onclick="nextKnot()">Next Knot ⮕</button>
+                    </div>
+                `;
+                container.appendChild(nextKnotDiv);
+                totalSteps++; // Increment to include the Next Knot step
+            }
+            
+            // Apply special styling for bowline knot - scale up 50% and center
+            if (knotType === 'bowline') {
+                const style = document.createElement('style');
+                style.id = 'knot-specific-style';
+                style.textContent = `
+                    .instruction-step .card img {
+                        max-width: 160%;
+                        max-height: 160%;
+                        margin-top: 143px;
+                    }
+                    #step1 .card img {
+                        margin-top: 172px;
+                    }
+                    #step6 .card img {
+                        margin-top: 172px;
+                    }
+                `;
+                // Remove existing style if present
+                const existingStyle = document.getElementById('knot-specific-style');
+                if (existingStyle) existingStyle.remove();
+                document.head.appendChild(style);
+            } else if (knotType === 'square') {
+                // Apply special styling for square knot - step 1 stays at 130%, steps 2-6 get 15% bigger and move down 20%
+                const style = document.createElement('style');
+                style.id = 'knot-specific-style';
+                style.textContent = `
+                    .instruction-step .card img {
+                        max-width: 130%;
+                        max-height: 130%;
+                        margin-top: 90px;
+                    }
+                    #step2 .card img {
+                        max-width: 145%;
+                        max-height: 145%;
+                        margin-top: 140px;
+                        margin-left: -10%;
+                    }
+                    #step3 .card img {
+                        max-width: 145%;
+                        max-height: 145%;
+                        margin-top: 161px;
+                    }
+                    #step4 .card img,
+                    #step5 .card img,
+                    #step6 .card img {
+                        max-width: 145%;
+                        max-height: 145%;
+                        margin-top: 182px;
+                    }
+                    #step7 .card img {
+                        max-width: 155%;
+                        max-height: 155%;
+                        margin-top: 237px;
+                        margin-left: -5%;
+                    }
+                `;
+                // Remove existing style if present
+                const existingStyle = document.getElementById('knot-specific-style');
+                if (existingStyle) existingStyle.remove();
+                document.head.appendChild(style);
+            } else {
+                // Remove knot-specific style if switching to a different knot
+                const existingStyle = document.getElementById('knot-specific-style');
+                if (existingStyle) existingStyle.remove();
+            }
+            
+            visibleSteps = 0;
+            document.getElementById('instruction-content').style.display = 'block';
+            document.getElementById('next-btn').disabled = false;
+            showNextStep();
+        }
+
+        function showNextStep() {
+            if (visibleSteps < totalSteps) {
+                visibleSteps++;
+                const stepElement = document.getElementById(`step${visibleSteps}`);
+                const nextKnotElement = document.getElementById('next-knot-step');
+                
+                if (stepElement) {
+                    stepElement.style.display = 'flex';
+                } else if (nextKnotElement && visibleSteps === totalSteps) {
+                    nextKnotElement.style.display = 'flex';
+                }
+                
+                if (visibleSteps === totalSteps) {
+                    document.getElementById('next-btn').disabled = true;
+                }
+                document.getElementById('prev-btn').disabled = false;
+                scrollToStep(visibleSteps);
+            }
+        }
+
+        function showPrevStep() {
+            if (visibleSteps > 1) {
+                visibleSteps--;
+                scrollToStep(visibleSteps);
+                document.getElementById('next-btn').disabled = false;
+                if (visibleSteps === 1) {
+                    document.getElementById('prev-btn').disabled = true;
+                }
+            }
+        }
+
+        function scrollToStep(step) {
+            let stepElement = document.getElementById(`step${step}`);
+            
+            // If regular step doesn't exist, check for next-knot-step
+            if (!stepElement) {
+                stepElement = document.getElementById('next-knot-step');
+            }
+            
+            const container = document.getElementById('instructions-container');
+            
+            if (stepElement && container) {
+                // Calculate the scroll position
+                const scrollLeft = stepElement.offsetLeft - container.offsetLeft;
+                
+                // Smooth scroll to the step
+                container.scrollTo({
+                    left: scrollLeft,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        window.onload = function() {
+            // Initialize: hide instruction content and knot menu
+            document.getElementById('instruction-content').style.display = 'none';
+            document.getElementById('knot-menu-screen').style.display = 'none';
+        };
+    </script>
+</head>
+<body>
+    <div class="container">
+        
+        <div id="start-screen" class="start-screen">
+            <div class="start-button-container">
+                <button class="start-btn" onclick="startInstructions()">START</button>
+            </div>
+            <div class="nav-buttons" style="visibility: hidden;"><!-- Placeholder to maintain layout -->
+                <button class="btn btn-prev">⬅</button>
+                <button class="btn btn-next">⮕</button>
+            </div>
+        </div>
+        
+        <div id="knot-menu-screen" class="knot-menu">
+            <div class="knot-menu-title">Select a Knot</div>
+            <div class="knot-options">
+                <button class="knot-option" onclick="selectKnot('single')">Single Knot</button>
+                <button class="knot-option" onclick="selectKnot('square')">Square Knot</button>
+                <button class="knot-option" onclick="selectKnot('bowline')">Bowline Knot</button>
+                <button class="knot-option" onclick="selectKnot('alpine')">Alpine Butterfly Loop</button>
+            </div>
+        </div>
+        
+        <div id="instruction-content">
+            <div class="knot-title-display">
+                <button class="menu-btn" onclick="toggleMenu()">
+                    <div class="menu-btn-line"></div>
+                    <div class="menu-btn-line"></div>
+                    <div class="menu-btn-line"></div>
+                </button>
+                <span id="knot-title">Single Knot</span>
+            </div>
+            <div class="instructions-container" id="instructions-container">
+                <div class="instruction-step" id="step1">
+                    <div class="step-title">Step 1</div>
+                    <div class="card">
+                        <img src="{{ url_for('static', filename='step_img/single_knot/newstep1.png') }}" alt="Single knot step 1">
+                    </div>
+                </div>
+                <div class="instruction-step" id="step2">
+                    <div class="step-title">Step 2</div>
+                    <div class="card">
+                        <img src="{{ url_for('static', filename='step_img/single_knot/newstep2.png') }}" alt="Single knot step 2">
+                    </div>
+                </div>
+                <div class="instruction-step" id="step3">
+                    <div class="step-title">Step 3</div>
+                    <div class="card">
+                        <img src="{{ url_for('static', filename='step_img/single_knot/newstep3.png') }}" alt="Single knot step 3">
+                    </div>
+                </div>
+            </div>
+            <div class="nav-buttons">
+                <button class="btn btn-prev" id="prev-btn" onclick="showPrevStep()">⬅</button>
+                <button class="btn btn-next" id="next-btn" onclick="showNextStep()">⮕</button>
+            </div>
+        </div>
+
+        <div id="popup-menu" class="popup-menu">
+            <div class="popup-menu-content">
+                <button class="close-menu-btn" onclick="toggleMenu()">✕</button>
+                <div class="popup-menu-title">Select a Knot</div>
+                <div class="popup-menu-options">
+                    <button class="popup-menu-option" onclick="selectKnotFromMenu('single')">Single Knot</button>
+                    <button class="popup-menu-option" onclick="selectKnotFromMenu('bowline')">Bowline Knot</button>
+                    <button class="popup-menu-option" onclick="selectKnotFromMenu('square')">Square Knot</button>
+                    <button class="popup-menu-option" onclick="selectKnotFromMenu('alpine')">Alpine Butterfly Loop</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
